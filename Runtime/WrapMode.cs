@@ -32,15 +32,15 @@ namespace Nebukam.Slate
 
         public static BytePair Clamp(ref this BytePair @this, ref BytePair bounds, ref WrapMode wrapX, ref WrapMode wrapY)
         {
-            if(wrapX != WrapMode.NONE)
+            if (wrapX != WrapMode.NONE)
             {
-                if(@this.x < 0)
+                if (@this.x < 0)
                     @this.x = (byte)(wrapX == WrapMode.WRAP ? bounds.x + (@this.x % bounds.x) : 0);
-                else if(@this.x >= bounds.x)
+                else if (@this.x >= bounds.x)
                     @this.x = (byte)(wrapX == WrapMode.WRAP ? @this.x % bounds.x : bounds.x - 1);
             }
 
-            if(wrapY != WrapMode.NONE)
+            if (wrapY != WrapMode.NONE)
             {
                 if (@this.y < 0)
                     @this.y = (byte)(wrapY == WrapMode.WRAP ? bounds.y + (@this.y % bounds.y) : 0);
@@ -80,6 +80,6 @@ namespace Nebukam.Slate
             return @this;
         }
 
-    }         
+    }
 
 }

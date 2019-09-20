@@ -18,8 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 
@@ -39,13 +37,13 @@ namespace Nebukam.Slate
 
         protected internal V[] m_slotList = null;
         protected internal AxisOrder m_planeOrder = AxisOrder.XYZ;
-        protected internal ComputeIndexOf 
-            m_indexOf, 
-            m_indexOfXYZ, 
-            m_indexOfXZY, 
-            m_indexOfYXZ, 
-            m_indexOfYZX, 
-            m_indexOfZXY, 
+        protected internal ComputeIndexOf
+            m_indexOf,
+            m_indexOfXYZ,
+            m_indexOfXZY,
+            m_indexOfYXZ,
+            m_indexOfYZX,
+            m_indexOfZXY,
             m_indexOfZYX;
         protected internal int
             m_lineLength = 0,
@@ -66,7 +64,8 @@ namespace Nebukam.Slate
         public AxisOrder planeOrder
         {
             get { return m_planeOrder; }
-            set {
+            set
+            {
                 m_planeOrder = value;
                 if (value == AxisOrder.XZY) // (x * z) * y
                 {
@@ -172,7 +171,7 @@ namespace Nebukam.Slate
             int3 diff = base.OnSizeChanged(oldSize);
             int oldVolume = oldSize.Volume(), newVolume = m_size.Volume();
 
-            if(m_slotList == null)
+            if (m_slotList == null)
             {
                 m_slotList = new V[newVolume];
                 return diff;
@@ -196,7 +195,7 @@ namespace Nebukam.Slate
             Init(clusterSize, clusterSlotModel, fillCluster, AxisOrder.XYZ);
         }
 
-        public virtual void Init(ByteTrio clusterSize, SlotModel clusterSlotModel, bool fillCluster, AxisOrder clusterPlaneOrder )
+        public virtual void Init(ByteTrio clusterSize, SlotModel clusterSlotModel, bool fillCluster, AxisOrder clusterPlaneOrder)
         {
             planeOrder = clusterPlaneOrder;
             base.Init(clusterSize, clusterSlotModel, fillCluster);
@@ -291,7 +290,7 @@ namespace Nebukam.Slate
 
             if (index == -1)
                 return null;
-            
+
             V slot = m_slotList[index];
             m_slotList[index] = null;
             return slot;
@@ -329,7 +328,7 @@ namespace Nebukam.Slate
         /// <remarks>Input coordinates are wrapped per-axis using each of the cluster's individual wrap mode.</remarks>
         public override bool TryGet(int x, int y, int z, out ISlot slot)
         {
-            int index = IndexOf(new ByteTrio(x,y,z));
+            int index = IndexOf(new ByteTrio(x, y, z));
 
             if (index == -1)
             {

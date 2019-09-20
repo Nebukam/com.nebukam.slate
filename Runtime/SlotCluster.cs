@@ -18,11 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
-using static Unity.Mathematics.math;
 using UnityEngine;
+using static Unity.Mathematics.math;
 
 namespace Nebukam.Slate
 {
@@ -165,7 +164,7 @@ namespace Nebukam.Slate
             m_wrapX = WrapMode.NONE,
             m_wrapY = WrapMode.NONE,
             m_wrapZ = WrapMode.NONE;
-        
+
         /// <summary>
         /// Model used for formatting slots
         /// </summary>
@@ -198,15 +197,16 @@ namespace Nebukam.Slate
         public ByteTrio size
         {
             get { return m_size; }
-            set {
-                if(m_size == value) { return; }
+            set
+            {
+                if (m_size == value) { return; }
                 ByteTrio oldSize = m_size;
                 m_size = value;
                 OnSizeChanged(oldSize);
             }
         }
-        
-        protected virtual int3 OnSizeChanged(ByteTrio oldSize )
+
+        protected virtual int3 OnSizeChanged(ByteTrio oldSize)
         {
             return int3(
                 m_size.x - oldSize.x,
@@ -214,7 +214,8 @@ namespace Nebukam.Slate
                 m_size.z - oldSize.z);
         }
 
-        public Bounds bounds {
+        public Bounds bounds
+        {
             get
             {
                 float3 s = m_size * m_slotModel.m_slotSize;
@@ -283,7 +284,7 @@ namespace Nebukam.Slate
                 return false;
             }
 
-            float3 
+            float3
                 s = m_slotModel.size,
                 loc = location - pos;
 
@@ -393,7 +394,7 @@ namespace Nebukam.Slate
             if (slot.cluster == this)
                 slot.cluster = null;
         }
-        
+
         /// <summary>
         /// Return the world-space projection of the given coordinates, as projected by this cluster.
         /// </summary>
@@ -418,7 +419,7 @@ namespace Nebukam.Slate
         /// <summary>
         /// Clear cluster & releases all slots.
         /// </summary>
-        public abstract void Clear( bool release = false );
+        public abstract void Clear(bool release = false);
 
         #region PoolItem
 

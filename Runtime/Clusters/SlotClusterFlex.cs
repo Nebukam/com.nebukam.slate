@@ -19,7 +19,6 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 
@@ -129,7 +128,7 @@ namespace Nebukam.Slate
         /// <returns></returns>
         public override V Add(ByteTrio coord)
         {
-            
+
             if (m_slots.TryGetValue(coord, out ISlot dslot))
                 return dslot as V;
 
@@ -212,7 +211,7 @@ namespace Nebukam.Slate
                 slot.pos = ComputePosition(ref slot.m_localCoordinates);
             }
         }
-        
+
         /// <summary>
         /// Fills all empty slots in this cluster with.
         /// </summary>
@@ -258,7 +257,7 @@ namespace Nebukam.Slate
                 slot = m_slotList[i];
                 OnSlotRemoved(slot);
 
-                if(release)
+                if (release)
                     slot.Release();
             }
 
