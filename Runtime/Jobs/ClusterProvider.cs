@@ -18,39 +18,76 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Nebukam.JobAssist;
 using Unity.Collections;
 
+
 namespace Nebukam.Slate
 {
 
-    public interface IClusterProvider<T> : IProcessor
-        where T : struct, ISlotInfos
+    public interface IClusterProvider<T, S> : IProcessor
+        where S : ISlot
+        where T : struct, ISlotInfos<S>
     {
+        ISlotCluster<S> slotCluster { get; }
+        List<S> lockedSlots { get; }
         NativeArray<T> outputSlotInfos { get; }
-        List<ISlot> lockedSlots { get; }
+        NativeHashMap<ByteTrio, int> outputSlotCoordinateMap { get; }
     }
 
-    public class ClusterProvider<T> : Processor<Unemployed>, IClusterProvider<T>
-        where T : struct, ISlotInfos
+    public class ClusterProvider<T, S> : Processor<Unemployed>, IClusterProvider<T, S>
+        where S : Slot, ISlot
+        where T : struct, ISlotInfos<S>
     {
 
-        protected ISlotCluster<ISlot> m_slotCluster = null;
-        protected List<ISlot> m_lockedSlots = new List<ISlot>();
-        protected NativeArray<T> m_outputSlotInfos;
+        protected ISlotCluster<S> m_slotCluster = null;
+        protected List<S> m_lockedSlots = new List<S>();
+        protected NativeArray<T> m_outputSlotInfos = new NativeArray<T>(0, Allocator.Persistent);
+        protected NativeHashMap<ByteTrio, int> m_outputSlotCoordMap = new NativeHashMap<ByteTrio, int>(0, Allocator.Persistent);
 
-        public List<ISlot> lockedSlots { get { return m_lockedSlots; } }
+        public ISlotCluster<S> slotCluster { get { return m_slotCluster; } }
+        public List<S> lockedSlots { get { return m_lockedSlots; } }
         public NativeArray<T> outputSlotInfos { get { return m_outputSlotInfos; } }
+        public NativeHashMap<ByteTrio, int> outputSlotCoordinateMap { get { return m_outputSlotCoordMap; } }
 
         protected override void InternalLock()
         {
-            //Copy slots ?
+            int count = m_slotCluster.Count;
+            m_lockedSlots.Clear();
+            m_lockedSlots.Capacity = count;
+            for (int i = 0; i < count; i++) { m_lockedSlots.Add(m_slotCluster[i]); }
         }
 
         protected override void Prepare(ref Unemployed job, float delta)
         {
-            //Fill slot list
+
+            int slotCount = m_lockedSlots.Count;
+
+            if (m_outputSlotInfos.Length != slotCount)
+            {
+                m_outputSlotInfos.Dispose();
+                m_outputSlotInfos = new NativeArray<T>(slotCount, Allocator.Persistent);
+            }
+
+            m_outputSlotCoordMap.Clear();
+
+            S slot;
+            T slotInfos;
+
+            for(int i = 0; i < slotCount; i++)
+            {
+
+                slot = m_lockedSlots[i];
+                slotInfos = new T();
+                slotInfos.Capture(slot);
+
+                m_outputSlotInfos[i] = slotInfos;
+                m_outputSlotCoordMap.TryAdd(slot.m_coordinates, i);
+
+            }
+
         }
 
         protected override void Apply(ref Unemployed job) { }

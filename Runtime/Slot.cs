@@ -24,13 +24,20 @@ namespace Nebukam.Slate
     public interface ISlot : IVertex
     {
         ISlotCluster<ISlot> cluster { get; set; }
+        ByteTrio coordinates { get; set; }
     }
 
     public class Slot : Vertex, ISlot, Pooling.IRequireCleanUp
     {
 
-        internal ByteTrio m_localCoordinates = ByteTrio.zero;
+        internal ByteTrio m_coordinates = ByteTrio.zero;
         internal ISlotCluster<ISlot> m_cluster = null;
+
+        public ByteTrio coordinates
+        {
+            get { return m_coordinates; }
+            set { m_coordinates = value; }
+        }
 
         public ISlotCluster<ISlot> cluster
         {
@@ -40,7 +47,7 @@ namespace Nebukam.Slate
         
         public virtual void CleanUp()
         {
-            m_localCoordinates = ByteTrio.zero;
+            m_coordinates = ByteTrio.zero;
         }
 
     }

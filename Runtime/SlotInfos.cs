@@ -22,13 +22,10 @@
 namespace Nebukam.Slate
 {
 
-    public interface ISlotInfos
+    public interface ISlotInfos<S>
+        where S : ISlot
     {
-        void Capture(ISlot slot);
+        void Capture(S slot);
     }
 
-    public struct SlotInfos
-    {
-
-    }
 }

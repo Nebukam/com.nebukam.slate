@@ -34,6 +34,17 @@ namespace Nebukam.Slate
         where V : Slot, ISlot, new()
     {
 
+        internal struct SlotIndex
+        {
+            public int index;
+            public V slot;
+            public SlotIndex(int i, V s)
+            {
+                index = i;
+                slot = s;
+            }
+        }
+
         protected internal List<V> m_slotList = new List<V>();
         protected internal Dictionary<ByteTrio, ISlot> m_slots = new Dictionary<ByteTrio, ISlot>();
 
@@ -57,7 +68,7 @@ namespace Nebukam.Slate
 
             return -1;
         }
-
+        
         protected override int3 OnSizeChanged(ByteTrio oldSize)
         {
             int3 diff = base.OnSizeChanged(oldSize);
@@ -65,10 +76,38 @@ namespace Nebukam.Slate
             if (m_slotList.Count == 0 || (diff.x >= 0 && diff.y >= 0 && diff.z >= 0))
                 return diff;
 
-            //TODO : Apply resize.
-            throw new System.NotImplementedException("Resizing not implemented yet.");
+            //TOOD : Find a more elegant and efficient way to resize.
 
-            //return diff;
+            List<SlotIndex> outgoing = new List<SlotIndex>();
+            V slot;
+            ByteTrio coord;
+            SlotIndex s;
+            int 
+                sizeX = oldSize.x, 
+                sizeY = oldSize.y, 
+                sizeZ = oldSize.z;
+            
+            for(int i  = 0, count = m_slotList.Count; i < count; i++)
+            {
+                slot = m_slotList[i];
+                coord = slot.m_coordinates;
+
+                if (coord.x >= sizeX || coord.y >= sizeY || coord.z >= sizeZ)
+                    outgoing.Add(new SlotIndex(i,slot));
+                
+            }
+
+            for(int i = 0, count = outgoing.Count; i < count; i++)
+            {
+                s = outgoing[i];
+                m_slotList.RemoveAt(s.index);
+                OnSlotRemoved(s.slot);
+                s.slot.Release();
+            }
+
+            outgoing.Clear();
+
+            return diff;
         }
 
         /// <summary>
@@ -90,10 +129,10 @@ namespace Nebukam.Slate
 
             if (vSlot.cluster == this)
             {
-                if (vSlot.m_localCoordinates == coord)
+                if (vSlot.m_coordinates == coord)
                     return vSlot;
                 else
-                    m_slots.Remove(vSlot.m_localCoordinates); //a slot can only exists at a single coordinate
+                    m_slots.Remove(vSlot.m_coordinates); //a slot can only exists at a single coordinate
             }
             else
             {
@@ -114,7 +153,7 @@ namespace Nebukam.Slate
 
             }
 
-            vSlot.m_localCoordinates = coord;
+            vSlot.m_coordinates = coord;
             OnSlotAdded(vSlot);
 
             return vSlot;
@@ -133,7 +172,7 @@ namespace Nebukam.Slate
                 return dslot as V;
 
             V slot = Pooling.Pool.Rent<V>();
-            slot.m_localCoordinates = coord;
+            slot.m_coordinates = coord;
             m_slotList.Add(slot);
             OnSlotAdded(slot);
 
@@ -194,7 +233,7 @@ namespace Nebukam.Slate
         /// <param name="slot"></param>
         protected override void OnSlotAdded(V slot)
         {
-            ByteTrio coord = slot.m_localCoordinates;
+            ByteTrio coord = slot.m_coordinates;
             m_slots[coord] = slot;
             base.OnSlotAdded(slot);
         }
@@ -208,7 +247,7 @@ namespace Nebukam.Slate
             for (int i = 0, count = m_slotList.Count; i < count; i++)
             {
                 slot = m_slotList[i];
-                slot.pos = ComputePosition(ref slot.m_localCoordinates);
+                slot.pos = ComputePosition(ref slot.m_coordinates);
             }
         }
 

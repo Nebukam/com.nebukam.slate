@@ -52,6 +52,8 @@ namespace Nebukam.Slate
             }
         }
 
+        public float3 offset { get { return m_offset; } }
+
 
     }
 }

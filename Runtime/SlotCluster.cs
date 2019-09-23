@@ -214,7 +214,7 @@ namespace Nebukam.Slate
                 m_size.z - oldSize.z);
         }
 
-        public Bounds bounds
+        public virtual Bounds bounds
         {
             get
             {
@@ -275,7 +275,7 @@ namespace Nebukam.Slate
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public bool TryGetCoordOf(float3 location, out ByteTrio coord)
+        public virtual bool TryGetCoordOf(float3 location, out ByteTrio coord)
         {
 
             if (!bounds.Contains(location))
@@ -382,7 +382,7 @@ namespace Nebukam.Slate
         protected virtual void OnSlotAdded(V slot)
         {
             slot.cluster = this;
-            slot.pos = ComputePosition(ref slot.m_localCoordinates);
+            slot.pos = ComputePosition(ref slot.m_coordinates);
         }
 
         /// <summary>

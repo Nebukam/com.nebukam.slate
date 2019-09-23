@@ -54,7 +54,7 @@ namespace Nebukam.Slate
         /// </summary>
         public override int Count { get { return m_slotList.Length; } }
         public override V this[int index] { get { return m_slotList[index]; } }
-        public override int this[IVertex v] { get { return IndexOf((v as V).m_localCoordinates); } }
+        public override int this[IVertex v] { get { return IndexOf((v as V).m_coordinates); } }
 
         /// <summary>
         /// Plane order defined the order in which slots are ordered.
@@ -180,12 +180,53 @@ namespace Nebukam.Slate
             if (diff.x == 0 && diff.y == 0 && diff.z == 0)
                 return diff;
 
-            //If shrinked, remove extras
-            //If expanded, re-order non-null slots
+            V oldSlot;
+            V[] oldList = m_slotList;
+            m_slotList = new V[newVolume];
 
-            throw new System.NotImplementedException("Resizing not implemented yet.");
+            int 
+                sizeX = oldSize.x,
+                sizeY = oldSize.y,
+                sizeZ = oldSize.z,
+                oldLineLength = sizeX,
+                oldPlaneLength = sizeY * oldLineLength,
+                x = 0, y = 0, z = 0,
+                index;
 
-            //return diff;
+            ByteTrio coord;
+            
+            for (z = 0; z < sizeZ; z++) // volume
+            {
+                for (y = 0; y < sizeY; y++) // plane
+                {
+                    for (x = 0; x < sizeX; x++) // line
+                    {
+
+                        oldSlot = oldList[x + oldLineLength * y + oldPlaneLength * z];
+
+                        if (oldSlot == null)
+                            continue;
+
+                        coord = new ByteTrio(x,y,z);
+                        index = IndexOf(coord); // Index in resized context
+
+                        if (index == -1)
+                        {
+                            // Old slot pops out.
+                            OnSlotRemoved(oldSlot);
+                            oldSlot.Release();
+                        }
+                        else
+                        {
+                            // Move old slot
+                            m_slotList[index] = oldSlot;
+                        }
+
+                    }
+                }
+            }
+
+            return diff;
         }
 
 
@@ -225,10 +266,10 @@ namespace Nebukam.Slate
 
             if (vSlot.cluster == this)
             {
-                if (vSlot.m_localCoordinates == coord)
+                if (vSlot.m_coordinates == coord)
                     return vSlot;
                 else
-                    Remove(vSlot.m_localCoordinates); //a slot can only exists at a single coordinate
+                    Remove(vSlot.m_coordinates); //a slot can only exists at a single coordinate
             }
 
             V existingSlot = m_slotList[index];
@@ -246,7 +287,7 @@ namespace Nebukam.Slate
 
             }
 
-            vSlot.m_localCoordinates = coord;
+            vSlot.m_coordinates = coord;
             m_slotList[index] = vSlot;
             OnSlotAdded(vSlot);
 
@@ -272,7 +313,7 @@ namespace Nebukam.Slate
                 return slot;
 
             slot = Pooling.Pool.Rent<V>();
-            slot.m_localCoordinates = coord;
+            slot.m_coordinates = coord;
             m_slotList[index] = slot;
             OnSlotAdded(slot);
 
@@ -349,7 +390,7 @@ namespace Nebukam.Slate
             for (int i = 0, count = m_slotList.Length; i < count; i++)
             {
                 slot = m_slotList[i];
-                slot.pos = ComputePosition(ref slot.m_localCoordinates);
+                slot.pos = ComputePosition(ref slot.m_coordinates);
             }
         }
 
@@ -412,7 +453,7 @@ namespace Nebukam.Slate
                     slot.Release();
             }
 
-            m_slotList = null;
+            //m_slotList = null;
         }
 
         #region Nearest vertex in group
