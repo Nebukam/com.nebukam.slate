@@ -27,7 +27,7 @@ using Unity.Collections;
 namespace Nebukam.Slate
 {
 
-    public interface IClusterProvider<T, S> : IProcessor
+    public interface IClusterProvider<S, T> : IProcessor
         where S : ISlot
         where T : struct, ISlotInfos<S>
     {
@@ -37,7 +37,7 @@ namespace Nebukam.Slate
         NativeHashMap<ByteTrio, int> outputSlotCoordinateMap { get; }
     }
 
-    public class ClusterProvider<T, S> : Processor<Unemployed>, IClusterProvider<T, S>
+    public class ClusterProvider<S, T> : Processor<Unemployed>, IClusterProvider<S, T>
         where S : Slot, ISlot
         where T : struct, ISlotInfos<S>
     {
@@ -98,6 +98,14 @@ namespace Nebukam.Slate
         {
             base.Dispose(disposing);
             if (!disposing) { return; }
+
+            m_lockedSlots.Clear();
+            m_lockedSlots = null;
+
+            m_slotCluster = null;
+
+            m_outputSlotInfos.Dispose();
+            m_outputSlotCoordMap.Dispose();
 
         }
 
