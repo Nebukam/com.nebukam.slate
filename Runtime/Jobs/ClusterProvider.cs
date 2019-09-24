@@ -81,7 +81,7 @@ namespace Nebukam.Slate
 
                 slot = m_lockedSlots[i];
                 slotInfos = new T();
-                slotInfos.Capture(slot);
+                slotInfos.Capture(slot, i);
 
                 m_outputSlotInfos[i] = slotInfos;
                 m_outputSlotCoordMap.TryAdd(slot.m_coordinates, i);

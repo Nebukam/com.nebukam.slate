@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Unity.Mathematics;
 
 namespace Nebukam.Slate
 {
@@ -25,7 +26,20 @@ namespace Nebukam.Slate
     public interface ISlotInfos<S>
         where S : ISlot
     {
-        void Capture(S slot);
+        void Capture(S slot, int index);
+    }
+
+    public struct SlotInfos : ISlotInfos<ISlot>
+    {
+        public int index;
+        public ByteTrio coord;
+
+        public void Capture(ISlot slot, int index)
+        {
+            this.index = index;
+            coord = slot.coordinates;
+        }
+
     }
 
 }
