@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using Nebukam.JobAssist;
 using Unity.Collections;
 
-namespace Nebukam.Slate
+namespace Nebukam.Cluster
 {
     /*
     public interface IGraphProvider : IProcessor
