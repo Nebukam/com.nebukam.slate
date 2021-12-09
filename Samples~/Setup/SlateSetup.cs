@@ -22,7 +22,7 @@ public class SlateSetup : MonoBehaviour
         m_model.size = slotSize;
         m_model.anchor = slotAnchor;
 
-        m_cluster = Nebukam.Pooling.Pool.Rent<SlotClusterFixed<Slot>>();
+        m_cluster = Pool.Rent<SlotClusterFixed<Slot>>();
         m_cluster.Init(size, m_model, true);
     }
 

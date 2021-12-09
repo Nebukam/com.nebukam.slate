@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using Nebukam.Common;
 
 namespace Nebukam.Slate
 {
